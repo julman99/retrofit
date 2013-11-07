@@ -60,7 +60,7 @@ public class FormUrlEncodingTypedOutputTest {
 
   @Test public void arrayIterable() throws Exception {
     FormUrlEncodedTypedOutput fe = new FormUrlEncodedTypedOutput();
-    fe.addField("ping", Arrays.asList(new String[]{"pong", "pong-too"}));
+    fe.addField("ping", Arrays.asList("pong", "pong-too"));
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     fe.writeTo(out);

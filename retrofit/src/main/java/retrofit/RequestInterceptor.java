@@ -21,12 +21,24 @@ public interface RequestInterceptor {
      */
     void addEncodedPathParam(String name, String value);
 
-    /** Add an additional query parameter. This will not replace any existing query parameters. */
+    /**
+     * Add an additional query parameter. This will not replace any existing query parameters.
+     *
+     * If value is an {@link java.lang.Iterable} or an array of primitives, it will be iterated
+     * and each of the arguments added as a query parameter with the same name; Otherwise value
+     * will have {@link #toString()} called on it, and that string is what will be added as the
+     * query parameter.
+     */
     void addQueryParam(String name, Object value);
 
     /**
      * Add an additional query parameter without first URI encoding. This will not replace any
      * existing query parameters.
+     *
+     * If value is an {@link java.lang.Iterable} or an array of primitives, it will be iterated
+     * and each of the arguments added as a query parameter with the same name; Otherwise value
+     * will have {@link #toString()} called on it, and that string is what will be added as the
+     * query parameter.
      */
     void addEncodedQueryParam(String name, Object value);
   }
