@@ -2,7 +2,19 @@
 package retrofit;
 
 import com.google.gson.Gson;
+
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import retrofit.client.Header;
 import retrofit.client.Request;
 import retrofit.converter.Converter;
@@ -12,15 +24,17 @@ import retrofit.mime.MultipartTypedOutput;
 import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.*;
-
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 import static retrofit.RestMethodInfo.ParamUsage;
-import static retrofit.RestMethodInfo.ParamUsage.*;
+import static retrofit.RestMethodInfo.ParamUsage.BODY;
+import static retrofit.RestMethodInfo.ParamUsage.ENCODED_PATH;
+import static retrofit.RestMethodInfo.ParamUsage.ENCODED_QUERY;
+import static retrofit.RestMethodInfo.ParamUsage.FIELD;
+import static retrofit.RestMethodInfo.ParamUsage.HEADER;
+import static retrofit.RestMethodInfo.ParamUsage.PART;
+import static retrofit.RestMethodInfo.ParamUsage.PATH;
+import static retrofit.RestMethodInfo.ParamUsage.QUERY;
 import static retrofit.RestMethodInfo.RequestType;
 
 public class RequestBuilderTest {
@@ -185,6 +199,110 @@ public class RequestBuilderTest {
     assertThat(request.getBody()).isNull();
   }
 
+  @Test public void getWithQueryParamArrayPrimitiveInt() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryNumber", new int[]{4, 8}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryNumber=4&lotteryNumber=8");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveShort() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryNumber", new short[]{4, 8}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryNumber=4&lotteryNumber=8");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveLong() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryNumber", new long[]{4L, 8L}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryNumber=4&lotteryNumber=8");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveFloat() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("catWeightLbs", new float[]{4.8f, 15.16f}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?catWeightLbs=4.8&catWeightLbs=15.16");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveDouble() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryNumber", new double[]{4D, 8D}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryNumber=4.0&lotteryNumber=8.0");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveBoolean() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryWinner", new boolean[]{true, false}) // I don't see a legitimate use case for this, but I'm testing it
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryWinner=true&lotteryWinner=false");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveChar() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("testScore", new char[]{'f', 'd'}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?testScore=f&testScore=d");
+    assertThat(request.getBody()).isNull();
+  }
+
+  @Test public void getWithQueryParamArrayPrimitiveByte() throws Exception {
+    Request request = new Helper() //
+        .setMethod("GET") //
+        .setUrl("http://example.com") //
+        .setPath("/foo/bar/") //
+        .addQueryParam("lotteryNumber", new byte[]{0x04, 0x08}) //
+        .build();
+    assertThat(request.getMethod()).isEqualTo("GET");
+    assertThat(request.getHeaders()).isEmpty();
+    assertThat(request.getUrl()).isEqualTo("http://example.com/foo/bar/?lotteryNumber=4&lotteryNumber=8");
+    assertThat(request.getBody()).isNull();
+  }
+
   @Test public void getWithQueryParamArray() throws Exception {
     Request request = new Helper() //
         .setMethod("GET") //
@@ -203,7 +321,7 @@ public class RequestBuilderTest {
         .setMethod("GET") //
         .setUrl("http://example.com") //
         .setPath("/foo/bar/") //
-        .addQueryParam("ping", Arrays.asList(new String[]{"pong", "pong-too"})) //
+        .addQueryParam("ping", Arrays.asList("pong", "pong-too")) //
         .build();
     assertThat(request.getMethod()).isEqualTo("GET");
     assertThat(request.getHeaders()).isEmpty();

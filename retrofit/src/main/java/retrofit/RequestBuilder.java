@@ -15,6 +15,12 @@
  */
 package retrofit;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import retrofit.client.Header;
 import retrofit.client.Request;
 import retrofit.converter.Converter;
@@ -22,11 +28,6 @@ import retrofit.mime.FormUrlEncodedTypedOutput;
 import retrofit.mime.MultipartTypedOutput;
 import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 final class RequestBuilder implements RequestInterceptor.RequestFacade {
   private final Converter converter;
@@ -148,18 +149,60 @@ final class RequestBuilder implements RequestInterceptor.RequestFacade {
     }
 
     if (value instanceof Iterable) {
-        addQueryParamIterable(name, (Iterable) value, urlEncodeValue);
+      addQueryParamIterable(name, (Iterable) value, urlEncodeValue);
     } else if (value.getClass().isArray()) {
+      if (value instanceof Object[]) {
         Iterable arrayAsList = Arrays.asList((Object[]) value);
         addQueryParamIterable(name, arrayAsList, urlEncodeValue);
+      } else {
+        addQueryParamArray(name, value, urlEncodeValue);
+      }
     } else {
-        addQueryParamString(name, value.toString(), urlEncodeValue);
+      addQueryParamString(name, value.toString(), urlEncodeValue);
+    }
+  }
+
+  void addQueryParamArray(String name, Object primitiveArray, boolean urlEncodeValue) {
+    // unfortunately we have to figure out the array's type before we can iterate it in order
+    // to add the primitives to the param list as objects.
+    if (primitiveArray instanceof int[]) {
+      for (int value : (int[]) primitiveArray) {
+        addQueryParam(name, Integer.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof short[]) {
+      for (short value : (short[]) primitiveArray) {
+        addQueryParam(name, Short.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof long[]) {
+      for (long value : (long[]) primitiveArray) {
+        addQueryParam(name, Long.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof double[]) {
+      for (double value : (double[]) primitiveArray) {
+        addQueryParam(name, Double.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof float[]) {
+      for (float value : (float[]) primitiveArray) {
+        addQueryParam(name, Float.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof boolean[]) {
+      for (boolean value : (boolean[]) primitiveArray) {
+        addQueryParam(name, Boolean.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof byte[]) {
+      for (byte value : (byte[]) primitiveArray) {
+        addQueryParam(name, Byte.valueOf(value), urlEncodeValue);
+      }
+    } else if (primitiveArray instanceof char[]) {
+      for (char value : (char[]) primitiveArray) {
+        addQueryParam(name, Character.valueOf(value), urlEncodeValue);
+      }
     }
   }
 
   void addQueryParamIterable(String name, Iterable values, boolean urlEncodeValue) {
-    for (Object value: values) {
-        addQueryParamString(name, value.toString(), urlEncodeValue);
+    for (Object value : values) {
+      addQueryParamString(name, value.toString(), urlEncodeValue);
     }
   }
 
